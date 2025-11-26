@@ -1,14 +1,5 @@
 -- Additional restaurant events for markers system compatibility
 
--- Duty toggle event
-RegisterNetEvent('ferp_restaurant:client:toggleDuty', function()
-    -- Check if QBX Core has duty toggle
-    if exports.qbx_core then
-        TriggerServerEvent('QBCore:ToggleDuty')
-        if Config.Debug then print('[DEBUG] Toggled duty') end
-    end
-end)
-
 -- Fridge event
 RegisterNetEvent('ferp_restaurant:client:openFridge', function(restaurantId)
     if Config.Debug then print('[DEBUG] Opening fridge for restaurant:', restaurantId) end
@@ -19,7 +10,7 @@ RegisterNetEvent('ferp_restaurant:client:openFridge', function(restaurantId)
     end
     
     -- Check if player is employed at this restaurant
-    if not exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId) then
+    if not IsEmployedAtRestaurant(restaurantId) then
         exports.ox_lib:notify({
             title = 'Acesso Negado',
             description = 'Você não trabalha neste restaurante',
@@ -45,7 +36,7 @@ RegisterNetEvent('ferp_restaurant:client:openShelf', function(restaurantId)
     end
     
     -- Check if player is employed at this restaurant
-    if not exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId) then
+    if not IsEmployedAtRestaurant(restaurantId) then
         exports.ox_lib:notify({
             title = 'Acesso Negado',
             description = 'Você não trabalha neste restaurante',

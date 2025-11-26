@@ -1,4 +1,4 @@
--- ox_lib Callback for checking if player has ingredients
+-- ox_lib Callback
 lib.callback.register('ferp_restaurant:server:checkIngredients', function(source, ingredients, quantity)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return false end
@@ -20,7 +20,7 @@ lib.callback.register('ferp_restaurant:server:checkIngredients', function(source
     return #missingIngredients == 0, missingIngredients
 end)
 
--- Event handlers for hunger/thirst changes (QBX compatible)
+-- Event handlers for hunger/thirst changes
 local function setPlayerHunger(source, amount)
     if not amount or amount == 0 then return end
     
@@ -178,7 +178,7 @@ lib.callback.register('ferp_restaurant:server:createFoodItem', function(source, 
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return false end
     
-    local restaurantId, restaurantData = exports['ferp_restaurant']:GetPlayerRestaurant(source)
+    local restaurantId, restaurantData = GetPlayerRestaurant(source)
     if not restaurantId then
         return false, 'You are not employed at a restaurant'
     end
@@ -267,7 +267,7 @@ lib.callback.register('ferp_restaurant:server:deleteFoodItem', function(source, 
     end
 end)
 
--- Event for crafting food (consuming ingredients)
+-- Event for crafting food
 RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
@@ -275,20 +275,20 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     
     if Config.Debug then print('[DEBUG] Crafting item:', json.encode(item)) end
     
-    -- Use the category-based item name (restaurant_main, restaurant_side, etc.)
+    -- Use the category-based item name
     local itemName = 'restaurant_' .. item.food_type
     if Config.Debug then print('[DEBUG] Using category item name:', itemName) end
     
     -- Check if item has ingredients
     if not item.ingredients or #item.ingredients == 0 then
-        -- If no ingredients, just give the item (for drinks, etc.)
+        -- If no ingredients, just give the item
         if Config.Debug then print('[DEBUG] No ingredients needed, giving item directly') end
         
-        -- Create metadata for ox_inventory (apenas imageurl para imagem customizada)
+        -- Create metadata for ox_inventory
         local metadata = {
             label = item.name,
             description = item.description,
-            imageurl = item.image_url, -- Campo correto para URL de imagem!
+            imageurl = item.image_url,
             restaurant_id = item.restaurant_id or 'unknown',
             food_id = item.id,
             ingredients = {},
@@ -297,7 +297,7 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
             quality = 100,
             weight = 250,
             type = 'food',
-            stack = true, -- Permite stack
+            stack = true,
             close = true
         }
         
@@ -307,11 +307,14 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
         if Config.Debug then print('[DEBUG] AddItem result:', success) end
         
         if success then
-            -- Notification removed to avoid duplicates (ox_inventory handles this)
-            if Config.Debug then print('[DEBUG] Food item crafted successfully:', item.name) end
+            TriggerClientEvent('ox_lib:notify', src, {
+                title = 'Cooking Complete',
+                description = 'You cooked: ' .. item.name,
+                type = 'success'
+            })
         else
             TriggerClientEvent('ox_lib:notify', src, {
-                title = 'Crafting Failed',
+                title = 'Cooking Failed',
                 description = 'Could not add item to inventory',
                 type = 'error'
             })
@@ -319,51 +322,48 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
         return
     end
     
-    if Config.Debug then print('[DEBUG] Checking ingredients:', json.encode(item.ingredients)) end
-    
-    -- Check if player still has all ingredients
-    local missingIngredients = {}
+    -- Count how many of each ingredient is needed
+    local ingredientCounts = {}
     for _, ingredient in pairs(item.ingredients) do
-        -- Get the actual item name from config
+        ingredientCounts[ingredient] = (ingredientCounts[ingredient] or 0) + 1
+    end
+    
+    -- Check if player has enough of each ingredient
+    local missingIngredients = {}
+    for ingredient, count in pairs(ingredientCounts) do
         local ingredientData = Config.Ingredients[ingredient]
         local ingredientItemName = ingredientData and ingredientData.item or ingredient
-        
         local hasItem = exports.ox_inventory:GetItemCount(src, ingredientItemName)
-        if Config.Debug then print('[DEBUG] Ingredient:', ingredient, 'Item name:', ingredientItemName, 'Count:', hasItem) end
         
-        if not hasItem or hasItem < 1 then
-            missingIngredients[#missingIngredients + 1] = ingredient
+        if hasItem < count then
+            missingIngredients[#missingIngredients + 1] = ingredient .. ' (' .. count .. 'x)'
         end
     end
     
     if #missingIngredients > 0 then
-        if Config.Debug then print('[DEBUG] Missing ingredients:', json.encode(missingIngredients)) end
-        return TriggerClientEvent('ox_lib:notify', src, {
-            title = 'Crafting Failed',
-            description = 'Missing ingredients',
+        TriggerClientEvent('ox_lib:notify', src, {
+            title = 'Cooking Failed',
+            description = 'Missing: ' .. table.concat(missingIngredients, ', '),
             type = 'error'
         })
+        return
     end
     
-    if Config.Debug then print('[DEBUG] All ingredients available, removing from inventory') end
-    
     -- Remove ingredients from inventory
-    for _, ingredient in pairs(item.ingredients) do
-        -- Get the actual item name from config
+    for ingredient, count in pairs(ingredientCounts) do
         local ingredientData = Config.Ingredients[ingredient]
         local ingredientItemName = ingredientData and ingredientData.item or ingredient
-        local removed = exports.ox_inventory:RemoveItem(src, ingredientItemName, 1)
-        if Config.Debug then print('[DEBUG] Removed ingredient:', ingredient, 'Success:', removed) end
+        exports.ox_inventory:RemoveItem(src, ingredientItemName, count)
     end
     
     -- Give crafted item with metadata
     if Config.Debug then print('[DEBUG] Adding crafted item to inventory:', itemName) end
     
-    -- Create metadata for ox_inventory (some fields might need specific names)
+    -- Create metadata for ox_inventory
     local metadata = {
         label = item.name,
         description = item.description,
-        imageurl = item.image_url, -- Campo correto para URL de imagem!
+        imageurl = item.image_url, 
         restaurant_id = item.restaurant_id or 'unknown',
         food_id = item.id,
         ingredients = item.ingredients,
@@ -372,7 +372,7 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
         quality = 100,
         weight = 250,
         type = 'food',
-        stack = true, -- Permite stack
+        stack = true,
         close = true
     }
     
@@ -382,11 +382,14 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     if Config.Debug then print('[DEBUG] AddItem result:', success) end
     
     if success then
-        -- Notification removed to avoid duplicates (ox_inventory handles this)
-        if Config.Debug then print('[DEBUG] Food item crafted successfully:', item.name) end
+        TriggerClientEvent('ox_lib:notify', src, {
+            title = 'Cooking Complete',
+            description = 'You cooked: ' .. item.name,
+            type = 'success'
+        })
     else
         TriggerClientEvent('ox_lib:notify', src, {
-            title = 'Crafting Failed',
+            title = 'Cooking Failed',
             description = 'Could not add item to inventory',
             type = 'error'
         })

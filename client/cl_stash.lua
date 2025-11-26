@@ -11,7 +11,7 @@ RegisterNetEvent('ferp_restaurant:client:openStash', function(restaurantId)
     end
     
     -- Check if player is employed at this restaurant
-    if not exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId) then
+    if not IsEmployedAtRestaurant(restaurantId) then
         exports.ox_lib:notify({
             title = 'Acesso Negado',
             description = 'Você não trabalha neste restaurante',

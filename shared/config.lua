@@ -52,7 +52,7 @@ Config.Restaurants = {
             shelf = vector3(-587.33, -1059.59, 22.34),
             box = vector3(-585.51, -1055.45, 22.34),
             toy_box = vector3(-586.0, -1056.0, 22.34),
-            stash = vector3(-588.0, -1057.0, 22.34), -- Stash geral do restaurante
+            stash = vector3(-588.16998291016, -1066.8900146484, 22.5), -- Stash geral do restaurante
             cooking = {
                 {coords = vector3(-590.97, -1056.51, 22.36), type = 'main'},
                 {coords = vector3(-591.21, -1063.16, 22.36), type = 'side'},

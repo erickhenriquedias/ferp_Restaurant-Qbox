@@ -5,17 +5,12 @@ CreateThread(function()
     Wait(1000) -- Wait for database to be ready
     
     for restaurantId, restaurantData in pairs(Config.Restaurants) do
-        local result = MySQL.single.await('SELECT * FROM restaurants WHERE id = ?', { restaurantId })
+        local result = MySQL.single.await('SELECT * FROM restaurants WHERE restaurant_id = ?', { restaurantId })
         
         if not result then
             -- Create new restaurant entry
-            MySQL.insert.await('INSERT INTO restaurants (id, name, coords, blip, zones, food_items, menu_items, toys) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
+            MySQL.insert.await('INSERT INTO restaurants (restaurant_id, foods, toys) VALUES (?, ?, ?)', {
                 restaurantId,
-                restaurantData.name,
-                json.encode(restaurantData.coords),
-                json.encode(restaurantData.blip),
-                json.encode(restaurantData.zones),
-                json.encode({}),
                 json.encode({}),
                 json.encode({})
             })
@@ -32,9 +27,9 @@ CreateThread(function()
             -- Load existing restaurant data
             Restaurants[restaurantId] = {
                 id = restaurantId,
-                name = result.name,
-                foodItems = json.decode(result.food_items) or {},
-                menuItems = json.decode(result.menu_items) or {},
+                name = restaurantData.name,
+                foodItems = json.decode(result.foods) or {},
+                menuItems = {},
                 toys = json.decode(result.toys) or {},
                 employees = {}
             }
@@ -113,9 +108,8 @@ local function SaveRestaurantData(restaurantId)
     if not Restaurants[restaurantId] then return false end
     
     local restaurant = Restaurants[restaurantId]
-    MySQL.update.await('UPDATE restaurants SET food_items = ?, menu_items = ?, toys = ? WHERE id = ?', {
+    MySQL.update.await('UPDATE restaurants SET foods = ?, toys = ? WHERE restaurant_id = ?', {
         json.encode(restaurant.foodItems),
-        json.encode(restaurant.menuItems),
         json.encode(restaurant.toys),
         restaurantId
     })
@@ -158,9 +152,12 @@ exports('GetRestaurantData', function(restaurantId)
     return Restaurants[restaurantId]
 end)
 
-exports('GetPlayerRestaurant', function(src)
+function GetPlayerRestaurant(src)
     return GetRestaurantByPlayer(src)
-end)
+end
+
+-- Also export it for external resources
+exports('GetPlayerRestaurant', GetPlayerRestaurant)
 
 -- Dynamic box stash system
 local registeredBoxes = {}
@@ -226,7 +223,7 @@ RegisterNetEvent('ferp_restaurant:server:openBoxStash', function(boxId)
     exports.ox_inventory:forceOpenInventory(src, 'stash', boxId)
 end)
 
--- Give box item to employee (target interaction)
+-- Give box item to employee
 RegisterNetEvent('ferp_restaurant:server:getBox', function(restaurantId)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
@@ -325,7 +322,7 @@ lib.callback.register('ferp_restaurant:server:createToy', function(source, resta
     if Config.Debug then print('[FERP Restaurant] Toy parameters received - Name:', toyName, 'Description:', toyDescription, 'Image:', toyImage) end
     
     -- Update database
-    local result = MySQL.update.await('UPDATE restaurants SET toys = ? WHERE id = ?', {
+    local result = MySQL.update.await('UPDATE restaurants SET toys = ? WHERE restaurant_id = ?', {
         json.encode(Restaurants[restaurantId].toys),
         restaurantId
     })
@@ -357,7 +354,7 @@ lib.callback.register('ferp_restaurant:server:deleteToy', function(source, resta
     Restaurants[restaurantId].toys[toyId] = nil
     
     -- Update database
-    local result = MySQL.update.await('UPDATE restaurants SET toys = ? WHERE id = ?', {
+    local result = MySQL.update.await('UPDATE restaurants SET toys = ? WHERE restaurant_id = ?', {
         json.encode(Restaurants[restaurantId].toys),
         restaurantId
     })
@@ -588,9 +585,7 @@ RegisterCommand('cleanup_box_stashes', function(source, args)
     for boxId, stashInfo in pairs(registeredBoxes) do
         -- Check if any player has this box in their inventory
         local boxExists = false
-        
-        -- You could implement a more thorough check here by scanning all player inventories
-        -- For now, we'll clean up stashes older than 1 hour
+
         if type(stashInfo) == 'table' and stashInfo.last_accessed then
             if currentTime - stashInfo.last_accessed > 3600 then -- 1 hour
                 cleanupOrphanedStash(boxId)

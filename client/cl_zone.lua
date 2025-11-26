@@ -46,7 +46,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                             TriggerEvent('ferp_restaurant:client:openManagement', restaurantId)
                         end,
                     canInteract = function()
-                        return exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId) and 
+                        return IsEmployedAtRestaurant(restaurantId) and 
                                exports.qbx_core:GetPlayerData().job.grade.level >= 2
                     end
                     }
@@ -81,7 +81,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                         TriggerEvent('ferp_restaurant:client:toggleDuty', restaurantId, restaurant.job)
                     end,
                     canInteract = function()
-                        return exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId, false) -- false = don't need to be on duty for clock in
+                        return IsEmployedAtRestaurant(restaurantId, false) -- false = don't need to be on duty for clock in
                     end
                 }
             }
@@ -111,7 +111,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                             TriggerEvent('ferp_restaurant:client:openCookingMenu', restaurantId, cookingZone.type)
                         end,
                         canInteract = function()
-                            return exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId)
+                            return IsEmployedAtRestaurant(restaurantId)
                         end
                     }
                 }
@@ -144,7 +144,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                         TriggerEvent('ferp_restaurant:client:openFridge', restaurantId)
                     end,
                     canInteract = function()
-                        return exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId)
+                        return IsEmployedAtRestaurant(restaurantId)
                     end
                 }
             }
@@ -172,7 +172,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                         TriggerEvent('ferp_restaurant:client:openShelf', restaurantId)
                     end,
                     canInteract = function()
-                        return exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId)
+                        return IsEmployedAtRestaurant(restaurantId)
                     end
                 }
             }
@@ -260,7 +260,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                         TriggerEvent('ferp_restaurant:client:openStash', restaurantId)
                     end,
                     canInteract = function()
-                        return exports.ferp_restaurant:IsEmployedAtRestaurant(restaurantId)
+                        return IsEmployedAtRestaurant(restaurantId)
                     end
                 }
             }

@@ -1,10 +1,10 @@
 fx_version 'cerulean'
 game 'gta5'
 
-name 'qbx-restaurants'
-version '1.0.0'
+name 'Ferp_restaurants'
+version '1.5.0'
 description 'Complete Restaurant System for QBX'
-author 'QBX Community'
+author 'Ferp'
 
 dependencies {
     'ox_lib',

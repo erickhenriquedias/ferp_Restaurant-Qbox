@@ -17,7 +17,7 @@ local CategoryBuffs = {
     ["sugar"] = "alert"
 }
 
--- Function to configure ingredient-based buffs (simplified)
+-- Function to configure ingredient-based buffs
 function Buffs.configureBuffs(metadata)
     -- Check if buff system is enabled
     if not Config.BuffSystem or not Config.BuffSystem.enabled then
@@ -92,7 +92,7 @@ function Buffs.configureBuffs(metadata)
     end
 end
 
--- Function to apply specific buff types (normal scaling, no premium)
+-- Function to apply specific buff types
 function Buffs.applySpecificBuff(buffType, ingredientCount)
     -- Normal scaling: 1 ingredient = 25% max, up to 100% with 4+ ingredients
     local buffStrength
@@ -107,10 +107,14 @@ function Buffs.applySpecificBuff(buffType, ingredientCount)
         buffStrength = 100 -- 4+ ingredients = 100% buff
     end
     
-    local duration = 300 -- 5 minutes default
+    local duration = 300 -- 5 minutes default (300 seconds)
+    
+    if buffType == "stamina" then
+        duration = 300
+    end
     
     if Config.Debug then
-        print('[DEBUG] Normal buff calculation - Count:', ingredientCount, 'Strength:', buffStrength, 'Type:', buffType)
+        print('[DEBUG] Normal buff calculation - Count:', ingredientCount, 'Strength:', buffStrength, 'Type:', buffType, 'Duration:', duration)
     end
     
     if buffType == "strength" then

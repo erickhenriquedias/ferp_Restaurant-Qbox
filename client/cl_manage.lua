@@ -17,7 +17,7 @@ end)
 RegisterNetEvent('ferp_restaurant:client:openManagementMenu', function(restaurantId, restaurantData)
     if Config.Debug then print('[DEBUG] Management menu event triggered for: ' .. tostring(restaurantId)) end
     
-    if not exports['ferp_restaurant']:IsEmployedAtRestaurant(restaurantId) then
+    if not IsEmployedAtRestaurant(restaurantId) then
         if Config.Debug then print('[DEBUG] Not employed at restaurant: ' .. tostring(restaurantId)) end
         return lib.notify({
             title = 'Restaurant',
@@ -28,7 +28,7 @@ RegisterNetEvent('ferp_restaurant:client:openManagementMenu', function(restauran
     
     if Config.Debug then print('[DEBUG] Employment check passed') end
     
-    local PlayerJob = exports['ferp_restaurant']:GetPlayerJob()
+    local PlayerJob = GetPlayerJob()
     if Config.Debug then print('[DEBUG] Player job: ' .. json.encode(PlayerJob)) end
     
     if not PlayerJob or not PlayerJob.grade then

@@ -1,3 +1,4 @@
+-- FERP Restaurant Cats Script
 local CATS = {
     -- UwU Cafe cats
     {

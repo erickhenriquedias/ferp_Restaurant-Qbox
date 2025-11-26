@@ -1,159 +1,105 @@
-# 🍽️ FERP Restaurant System
+#  FERP Restaurant System
 
-A comprehensive restaurant management system for QBX Core featuring advanced food crafting, buff systems, employee management, and unique delivery mechanics.
+A comprehensive restaurant management system for QBX Core featuring food crafting, buff systems, employee management.
 
-## 📋 Features
+##  Main Features
 
-### 🏪 **Restaurant Management**
-- **Multi-Restaurant Support**: Burger Shot, UwU Cafe, Rooster Rest (easily expandable)
-- **Employee Management**: Duty system, grade-based permissions (Manager level 2+)
-- **Dynamic Food Creation**: Create custom food items with ingredients
-- **Food Control System**: Activate/deactivate menu items for cooking
-- **Inventory Integration**: Separate stashes for fridge, shelf, and storage
+- **Multi-Restaurant Support**: Burger Shot, UwU Cafe, Rooster Rest
+- **Employee Management**: Duty system, grade-based permissions
+- **Food Crafting**: Create custom food items with ingredients
+- **Buff System**: 8 ingredient categories providing unique buffs
+- **Fridge Preservation**: Food lasts 4x longer in fridges
+- **Delivery Boxes**: Unique storage boxes for deliveries
+- **Restaurant Cats**: Interactive pets that reduce stress
 
-### 🍳 **Advanced Food System**
-- **Ingredient-Based Crafting**: 50+ ingredients across 8 categories
-- **Metadata-Rich Items**: Each food item stores ingredients, creation info, expiry
-- **Food Preservation**: Fridge system extends food expiry by 4x
-- **Cooking Animations**: Realistic cooking process with progress bars
-- **Menu System**: Dynamic customer ordering with ingredient display
+##  Installation
 
-### 💪 **Buff System**
-- **8 Ingredient Categories**: Each provides unique buffs
-  - **Protein** → Strength (health, melee damage)
-  - **Vegetables** → Stamina + Medical healing (max 50 HP)
-  - **Leavening** → Intelligence (XP boost, hacking time)
-  - **Dairy** → Stress relief (immediate)
-  - **Grain** → Hunger bonus (immediate)
-  - **Seasoning** → Money luck (job payment bonus)
-  - **Oil** → Stress relief (immediate)
-  - **Sugar** → Alert (movement speed)
+### What You Need
+This script requires these other resources to work:
+- `ox_lib` - For menus and notifications
+- `ox_target` - For interaction points
+- `ox_inventory` - For item management
+- `qbx_core` - Your QBX framework
+- `qbx_management` - For employee/boss menus
 
-### 📦 **Unique Delivery System**
-- **Individual Box Stashes**: Each delivery box has unique stash with metadata
-- **Persistent Storage**: Boxes maintain contents regardless of inventory position
-- **Transferable**: Boxes can be given to other players while maintaining contents
-- **Restaurant Integration**: Boxes created with restaurant origin tracking
+### Step-by-Step Installation
 
-### 🐱 **Ambiance Features**
-- **Restaurant Cats**: Interactive cats that reduce stress when petted
-- **Toy System**: Create and manage restaurant-themed toys
-- **Toy Boxes**: Collectible items with random toy rewards
+#### 1. Download and Place Files
+- Extract the `ferp_restaurant` folder
+- Put it in your server's `resources` folder (example: `resources/[ox]/ferp_restaurant`)
 
-## 🛠️ Installation
+#### 2. Database Setup
+- Open your database manager (HeidiSQL, phpMyAdmin, etc.)
+- Open the `data.sql` file from the script folder
+- Copy everything and run it in your database
+- This creates the tables and adds sample food items
 
-### Dependencies
-```
-ox_lib
-ox_target  
-ox_inventory
-qbx_core
-qbx_management
-```
+#### 3. Add Items to Inventory
+- Go to your `ox_inventory` folder
+- Find and open `data/items.lua`
+- Scroll to the bottom
+- Copy and paste the items from the "Required Items" section below
+- Save the file
 
-### Database Setup
-```sql
--- Import the provided data.sql file
--- Creates restaurants and restaurant_food_items tables
--- Includes sample food items for each restaurant
-```
+#### 4. Configure Server
+- Open your `server.cfg` file
+- Add this line: `ensure ferp_restaurant`
+- Make sure it's AFTER ox_lib, ox_target, ox_inventory, and qbx_core
 
-### Resource Installation
-1. Place `ferp_restaurant` in your resources folder
-2. Add to server.cfg: `ensure ferp_restaurant`
-3. Configure restaurants in `shared/config.lua`
-4. Import ox_inventory items (see Items section below)
+#### 5. Setup Restaurants
+- Open `ferp_restaurant/shared/config.lua`
+- Edit the restaurant coordinates to match your server
+- Change job names if needed (default: burgershot, uwucafe, roostersrest)
 
-## ⚙️ Configuration
+#### 6. Start Server
+- Restart your server or type `refresh` then `ensure ferp_restaurant` in console
+- Check console for any errors
+- If you see `[FERP Restaurant] System initialized`, it's working!
 
-### Restaurant Setup (`shared/config.lua`)
+### Testing
+1. Go to one of the restaurant locations (coordinates in config.lua)
+2. You should see interaction points (ox_target)
+3. Use `/job set uwucafe 2` to test management features
+4. Try creating a food item in the management menu
+
+## ⚙️ Configuration (Optional)
+
+If you want to customize locations or settings, edit `shared/config.lua`:
+
+### Change Restaurant Locations
+Find this section and update the coordinates:
 ```lua
 Config.Restaurants = {
     ['uwu_cafe'] = {
         name = 'UwU Cafe',
-        job = 'uwucafe',
+        job = 'uwucafe',  -- Job name in your database
         zones = {
             management = {coords = vector3(-583.99, -1058.33, 22.34), radius = 1.5},
             duty = {coords = vector3(-584.08, -1061.35, 22.34), radius = 1.5},
-            fridge = {coords = vector3(-590.24, -1058.78, 22.34), radius = 1.5},
-            -- ... more zones
+            -- Copy these coordinates from your server
         }
     }
 }
 ```
-
-### Debug Configuration
+### Enable/Disable Features
 ```lua
-Config.Debug = false  -- Set to true for development debugging
+Config.Debug = false  -- Set to true to see detailed messages in console
+Config.BuffSystem.enabled = true  -- Set to false to disable food buffs
 ```
 
-### Buff System
-```lua
-Config.BuffSystem = {
-    enabled = true,
-    maxBuffs = 5,
-    stackable = false,
-    vegetableHealLimit = 50  -- Max HP vegetables can restore
-}
-```
+## 🔧 Required Items
 
-## 🎮 Usage Guide
-
-### For Restaurant Employees
-
-#### **Getting Started**
-1. Go on duty at the duty zone
-2. Access management menu (Grade 2+ required)
-3. Create food items or manage existing ones
-
-#### **Food Creation Process**
-1. Open Management → Food Management → Create Food Item
-2. Fill in: Name, Description, Image URL, Food Type
-3. Select ingredients (up to 5, required for main dishes)
-4. Food item is created and can be activated for cooking
-
-#### **Cooking Process**
-1. Use cooking zones (categorized by food type)
-2. Select food item to cook
-3. System checks for required ingredients
-4. Complete cooking animation
-5. Receive finished food item with metadata
-
-### For Customers
-
-#### **Ordering Food**
-1. Use order zones at restaurants
-2. Browse available menu items
-3. Select item to order (automatically crafted)
-4. Receive food item with ingredients and buffs
-
-### Delivery System
-
-#### **Taking Delivery Boxes**
-1. Use "Get Box" interaction at restaurant
-2. Each box receives unique ID (e.g., #6536)
-3. Box metadata includes: ID, creator, timestamp, restaurant
-
-#### **Using Delivery Boxes**
-1. Use box item from inventory
-2. Opens unique stash regardless of inventory position
-3. Each box maintains separate contents
-4. Boxes can be traded/given to other players
-
-## 🔧 Items for ox_inventory
-
-Add these items to your `ox_inventory/data/items.lua`:
+Add these to your `ox_inventory/data/items.lua`:
 
 ```lua
--- Base restaurant items (metadata-driven)
 ['restaurant_main'] = {
     label = 'Main Dish',
     weight = 300,
     stack = false,
     close = true,
     description = 'A delicious main course',
+    degrade = 6000,
     client = {
-        image = 'restaurant_main.png',
         export = 'ferp_restaurant.useFood'
     }
 },
@@ -164,8 +110,8 @@ Add these items to your `ox_inventory/data/items.lua`:
     stack = false,
     close = true,
     description = 'A tasty side dish',
+    degrade = 6000,
     client = {
-        image = 'restaurant_side.png',
         export = 'ferp_restaurant.useFood'
     }
 },
@@ -176,8 +122,8 @@ Add these items to your `ox_inventory/data/items.lua`:
     stack = false, 
     close = true,
     description = 'A sweet dessert',
+    degrade = 6000,
     client = {
-        image = 'restaurant_dessert.png',
         export = 'ferp_restaurant.useFood'
     }
 },
@@ -188,13 +134,12 @@ Add these items to your `ox_inventory/data/items.lua`:
     stack = false,
     close = true,
     description = 'A refreshing drink',
+    degrade = 6000,
     client = {
-        image = 'restaurant_drink.png',
         export = 'ferp_restaurant.useDrink'
     }
 },
 
--- Delivery system
 ['restaurant_box'] = {
     label = 'Delivery Box',
     weight = 100,
@@ -202,12 +147,10 @@ Add these items to your `ox_inventory/data/items.lua`:
     close = true,
     description = 'A restaurant delivery box with unique storage',
     client = {
-        image = 'restaurant_box.png',
         export = 'ferp_restaurant.useRestaurantBox'
     }
 },
 
--- Toy system  
 ['restaurant_toy_box'] = {
     label = 'Toy Box',
     weight = 50,
@@ -215,179 +158,366 @@ Add these items to your `ox_inventory/data/items.lua`:
     close = true,
     description = 'A box containing restaurant toys',
     client = {
-        image = 'restaurant_toy_box.png',
         export = 'ferp_restaurant.useRestaurantToyBox'
     }
-}
+},
+
+-- Basic ingredients (examples - add more as needed)
+['beef'] = {
+    label = 'Beef',
+    weight = 100,
+    stack = true,
+    close = true,
+    description = 'Fresh beef'
+},
+
+['chicken'] = {
+    label = 'Chicken',
+    weight = 100,
+    stack = true,
+    close = true,
+    description = 'Fresh chicken'
+},
+
+['lettuce'] = {
+    label = 'Lettuce',
+    weight = 50,
+    stack = true,
+    close = true,
+    description = 'Fresh lettuce'
+},
+
+['tomato'] = {
+    label = 'Tomato',
+    weight = 50,
+    stack = true,
+    close = true,
+    description = 'Fresh tomato'
+},
+
+['cheese'] = {
+    label = 'Cheese',
+    weight = 50,
+    stack = true,
+    close = true,
+    description = 'Fresh cheese'
+},
+
+['milk'] = {
+    label = 'Milk',
+    weight = 100,
+    stack = true,
+    close = true,
+    description = 'Fresh milk'
+},
+
+['bread'] = {
+    label = 'Bread',
+    weight = 100,
+    stack = true,
+    close = true,
+    description = 'Fresh bread'
+},
+
+['flour'] = {
+    label = 'Flour',
+    weight = 100,
+    stack = true,
+    close = true,
+    description = 'Wheat flour'
+},
+
+['sugar'] = {
+    label = 'Sugar',
+    weight = 50,
+    stack = true,
+    close = true,
+    description = 'White sugar'
+},
+
+['salt'] = {
+    label = 'Salt',
+    weight = 50,
+    stack = true,
+    close = true,
+    description = 'Table salt'
+},
+
+['oil'] = {
+    label = 'Cooking Oil',
+    weight = 100,
+    stack = true,
+    close = true,
+    description = 'Cooking oil'
+},
 ```
 
-## 🎯 Key Features Explained
+## 🎮 How to Use
 
-### **Metadata System**
-Every food item contains rich metadata:
-```lua
-{
-    ingredients = {"beef", "cheese", "lettuce"},
-    food_type = "main",
-    restaurant_id = "uwu_cafe", 
-    created_by = "John Doe",
-    created_at = "2024-01-01 12:00:00",
-    expiry = 1704110400,
-    display_name = "UwU Burger"
-}
-```
+### For Restaurant Employees
 
-### **Fridge Preservation**
-- Food placed in restaurant fridges gets 4x longer expiry
-- Only food items affected (configured in `Config.FridgeAllowedItems`)
-- Uses ox_inventory hook system for real-time processing
+#### Getting Started
+1. **Go to the restaurant** (UwU Cafe, Burger Shot, or Rooster's Rest)
+2. **Go on duty** - Walk to the duty zone and press the interaction key
+3. **Open management** (Grade 2+ only) - Walk to management zone
 
-### **Buff Calculations**
-Buffs scale with ingredient count:
-- 1 ingredient = 25% buff strength
-- 2 ingredients = 50% buff strength  
-- 3 ingredients = 75% buff strength
-- 4+ ingredients = 100% buff strength
+#### Creating Food Items
+1. Open the management menu
+2. Click "Food Management" → "Create Food Item"
+3. Fill in the form:
+   - **Name**: What the food is called (e.g., "UwU Burger")
+   - **Description**: Short description
+   - **Image URL**: Discord image link (optional)
+   - **Food Type**: Main, Side, Dessert, or Drink
+   - **Ingredients**: Choose up to 5 ingredients
+4. Click create - the item is now in the database
 
-### **Box Uniqueness System**
-Each delivery box gets unique metadata:
-```lua
-{
-    box_id = "box_1_1754086877_6536",
-    created_by = "ABC12345", 
-    created_at = "2024-01-01 10:00:00",
-    restaurant = "uwu_cafe"
-}
-```
+#### Cooking Food
+1. Walk to a cooking zone (stove, grill, etc.)
+2. Select the food you want to cook
+3. **Make sure you have the ingredients in your inventory**
+4. Wait for the cooking animation to finish
+5. Food appears in your inventory
 
-### **Automatic Stash Cleanup System**
-- **Orphaned Stash Detection**: Detects when boxes are dropped/destroyed
-- **Periodic Cleanup**: Runs every 30 minutes to clean old stashes
-- **Grace Period**: 1 hour grace period for stashes with items
-- **Age-Based Cleanup**: Removes stashes inactive for 7+ days
-- **Admin Command**: `/cleanup_box_stashes` for manual cleanup
+#### Taking Delivery Boxes
+1. Walk to the box zone
+2. Interact and take a box
+3. Put food items inside the box
+4. Give the box to customers or delivery drivers
 
-## 🐛 Debugging
+### For Customers
 
-### Enable Debug Mode
-```lua
-Config.Debug = true  -- In shared/config.lua
-```
+#### Ordering Food
+1. Go to any restaurant
+2. Find the "Order Here" interaction point
+3. Browse the menu
+4. Click on an item to order it
+5. Pay and receive your food
 
-### Debug Output Examples
-```
-[FERP Restaurant] Created box with unique ID: box_1_1754086877_6536
-[FERP Restaurant] Opening box stash: box_1_1754086877_6536 for player: 1
-[FERP Restaurant] Hook triggered - Action: move From: player To: stash
-```
+#### Eating Food
+1. Open your inventory
+2. Use the food item
+3. You'll receive buffs based on the ingredients
+4. Check buffs with `/checkbuffs` command
+
+### Understanding Delivery Boxes
+- Each box has a **unique ID** (shows in the item name)
+- You can put items inside by using the box
+- Boxes can be traded to other players
+- Items stay in the box even if you drop it
+
+##  Buff System
+
+Each ingredient category provides different buffs:
+- **Protein** → Strength
+- **Vegetables** → Stamina + Health
+- **Leavening** → Intelligence  
+- **Dairy** → Stress Relief
+- **Grain** → Extra Hunger
+- **Seasoning** → Money Luck
+- **Oil** → Stress Relief
+- **Sugar** → Movement Speed
+
+More ingredients = stronger buffs (up to 4 ingredients for max strength)
+
+## 📞 Support & Commands
+
+### Useful Commands
+- `/checkbuffs` - See what buffs you currently have active
+- `/cleanup_box_stashes` - (Admin only) Clean up old delivery box storage
 
 ### Common Issues
-- **Boxes opening wrong stash**: Check metadata in ox_inventory
-- **Buffs not applying**: Verify `Config.BuffSystem.enabled = true`
-- **Food not preserving in fridge**: Check fridge hook registration
 
-## 🔄 API & Exports
+**"Script won't start"**
+- Check if all dependencies are installed and started first
+- Look at console for error messages
+- Make sure `data.sql` was imported to database
 
-### Client Exports
+**"Can't see interaction points"**
+- Make sure ox_target is working
+- Check if coordinates in config.lua are correct
+- Try going on duty first
+
+**"Cooking doesn't work"**
+- Make sure you have the required ingredients in inventory
+- Check if the food item is activated (in management menu)
+- Make sure you're on duty
+
+**"No buffs when eating"**
+- Check if `Config.BuffSystem.enabled = true` in config.lua
+- Food needs ingredients to give buffs (drinks/no-ingredient items don't give buffs)
+
+**"Boxes opening wrong storage"**
+- Each box has unique storage based on its ID
+- Make sure you're clicking "Use" on the box item itself
+
+### Getting Help
+If you have issues:
+1. Enable debug mode: Set `Config.Debug = true` in config.lua
+2. Restart the script
+3. Check console (F8) for detailed error messages
+4. Check server console for errors
+
+---
+
+## 🔌 Exports (For Developers)
+
+### How to Integrate Buffs in Your Scripts
+
+#### Example 1: Hacking Script - Intelligence Buff Extends Hack Time
+```lua
+-- In your hacking script (client or server side)
+RegisterNetEvent('myhack:startHack', function()
+    local baseTime = 30000 -- 30 seconds normally
+    
+    -- Get intelligence buff multiplier
+    local xpMult = exports.ferp_restaurant:GetXPMultiplier(source) -- Server
+    -- OR on client: local xpMult = exports.ferp_restaurant:GetXPMultiplier()
+    
+    -- Calculate bonus time (75% buff = 22.5 extra seconds)
+    local bonusTime = baseTime * (xpMult - 1.0)
+    local totalTime = baseTime + bonusTime
+    
+    print('Hack time: ' .. totalTime .. 'ms (base: ' .. baseTime .. ', bonus: ' .. bonusTime .. ')')
+    -- Start hack with extended time
+    TriggerClientEvent('myhack:client:start', source, totalTime)
+end)
+```
+
+#### Example 2: Job Script - Money Luck Buff Increases Payment
+```lua
+-- In your job payout script (server side)
+RegisterNetEvent('myjob:completeMission', function()
+    local src = source
+    local basePay = 500 -- Base payment $500
+    
+    -- Get total payment with buff bonus
+    local totalPay = exports.ferp_restaurant:GetJobPaymentBonus(src, basePay)
+    
+    -- If player has 100% money luck buff, totalPay = $1000
+    -- If no buff, totalPay = $500
+    
+    exports.qbx_core:GetPlayer(src).Functions.AddMoney('cash', totalPay)
+    
+    TriggerClientEvent('ox_lib:notify', src, {
+        title = 'Mission Complete',
+        description = 'You earned $' .. totalPay,
+        type = 'success'
+    })
+end)
+```
+
+#### Example 3: Check Any Buff Before Action
+```lua
+-- Client side - Check if player has strength buff
+if exports.ferp_restaurant:HasActiveBuff('strength') then
+    local buffStrength = exports.ferp_restaurant:GetBuffStrength('strength')
+    print('Player has ' .. buffStrength .. '% strength buff!')
+    
+    -- Apply bonus damage, health regen, etc.
+    local bonusDamage = buffStrength / 100 * 20 -- 20% more damage per 100% buff
+end
+
+-- Server side - Check if player has stamina buff
+local hasBuff = exports.ferp_restaurant:HasPlayerBuff(playerId, 'stamina')
+if hasBuff then
+    local buffValue = exports.ferp_restaurant:GetPlayerBuff(playerId, 'stamina')
+    -- Give stamina bonus, reduce sprint drain, etc.
+end
+```
+
+#### Example 4: Reduce Police Response Time with Alert Buff
+```lua
+-- In your dispatch/police script
+RegisterNetEvent('dispatch:robbery', function(coords)
+    local responseTime = 120000 -- 2 minutes base response time
+    
+    -- Players with alert buff (sugar ingredients) get faster response
+    for _, playerId in ipairs(GetPlayers()) do
+        if exports.ferp_restaurant:HasPlayerBuff(playerId, 'alert') then
+            local alertValue = exports.ferp_restaurant:GetPlayerBuff(playerId, 'alert')
+            local reduction = (alertValue / 100) * 30000 -- Up to 30s faster
+            local playerResponseTime = responseTime - reduction
+            
+            TriggerClientEvent('dispatch:alert', playerId, coords, playerResponseTime)
+        end
+    end
+end)
+```
+
+### Available Buff Types
+- `strength` - Protein ingredients (beef, chicken, fish, pork, eggs)
+- `stamina` - Vegetable ingredients (lettuce, tomato, broccoli, carrot, spinach, potato)
+- `intelligence` - Leavening ingredients (yeast, baking_powder, baking_soda)
+- `money_luck` - Seasoning ingredients (salt, pepper, herbs, spices, garlic)
+- `alert` - Sugar ingredients (sugar, honey, vanilla)
+- `stress-relief` and `hunger` are immediate effects, not timed buffs
+
+### Client-Side Exports
+
+#### Check Employment
 ```lua
 local isEmployed = exports.ferp_restaurant:IsEmployedAtRestaurant('uwu_cafe')
+```
 
-local job = exports.ferp_restaurant:GetPlayerJob() 
+#### Get Player Job
+```lua
+local job = exports.ferp_restaurant:GetPlayerJob()
+```
 
-local hasStrength = exports.ferp_restaurant:HasActiveBuff('strength')
-
--- Check if player has any active buff (generic)
-local hasBuff = exports.ferp_restaurant:HasActiveBuff('stamina')
-
--- Get strength of a specific buff (0 if none)
+#### Check Active Buffs
+```lua
+local hasBuff = exports.ferp_restaurant:HasActiveBuff('strength')
 local buffStrength = exports.ferp_restaurant:GetBuffStrength('intelligence')
+```
 
+#### Get Current Restaurant
+```lua
 local currentRestaurant = exports.ferp_restaurant:GetCurrentRestaurant()
+```
 
--- Apply ingredient-based buffs (manual)
+#### Manual Buff Application
+```lua
 exports.ferp_restaurant:configureBuffs(metadata)
-
--- Apply specific buff type (manual)
 exports.ferp_restaurant:applySpecificBuff('strength', 2)
-
--- Apply stress relief (manual)
 exports.ferp_restaurant:applyStressRelief(1)
-
--- Apply hunger boost (manual)
 exports.ferp_restaurant:applyHungerBoost(1)
-
--- Apply medical healing (manual)
 exports.ferp_restaurant:applyMedicalHealing(10)
+```
 
--- Use food item (ox_inventory integration)
+#### Item Usage (ox_inventory integration)
+```lua
 exports.ferp_restaurant:useFood(data, slot)
-
--- Use drink item (ox_inventory integration)
 exports.ferp_restaurant:useDrink(data, slot)
-
--- Use restaurant box (abre stash da box)
 exports.ferp_restaurant:useRestaurantBox(data, slot)
-
--- Use restaurant toy box (abre brinquedo aleatório)
 exports.ferp_restaurant:useRestaurantToyBox(data, slot)
 ```
 
-### Server Exports  
+### Server-Side Exports
+
+#### Get Player Buffs
 ```lua
 local buffValue = exports.ferp_restaurant:GetPlayerBuff(playerId, 'strength')
-
 local hasBuff = exports.ferp_restaurant:HasPlayerBuff(playerId, 'intelligence')
-
 local allBuffs = exports.ferp_restaurant:GetAllPlayerBuffs(playerId)
+```
 
--- Check if player has a specific buff (boolean)
-local hasBuff = exports.ferp_restaurant:HasPlayerBuff(playerId, 'stamina')
+#### Job Payment Bonus (based on money luck buff)
+```lua
+-- Example: Player has 50% money luck buff, receives 50% more payment
+local basePayment = 1000
+local bonus = exports.ferp_restaurant:GetJobPaymentBonus(playerId, basePayment)
+-- Returns: 1500 (1000 + 50% bonus)
+```
 
--- Get value/strength of a specific buff
-local buffValue = exports.ferp_restaurant:GetPlayerBuff(playerId, 'alert')
-
-local bonus = exports.ferp_restaurant:GetJobPaymentBonus(playerId, baseAmount)
-
--- Get XP multiplier (buff de inteligência)
+#### XP Multiplier (based on intelligence buff)
+```lua
+-- Example: Player has 75% intelligence buff, gains 75% more XP
+-- If player would normally gain 100 XP, they gain 175 XP instead
 local xpMult = exports.ferp_restaurant:GetXPMultiplier(playerId)
+-- Returns: 1.75 (1.0 + 0.75 from buff)
+
+-- Use this in your XP system:
+local baseXP = 100
+local finalXP = baseXP * xpMult  -- 175 XP
 ```
-
-## 🎨 Customization
-
-### Adding New Restaurants
-1. Add restaurant config in `shared/config.lua`
-2. Create database entry in restaurants table
-3. Set up zones and job integration
-4. Configure stashes in server startup
-
-### Creating New Ingredients
-```lua
-Config.Ingredients = {
-    ['new_ingredient'] = { 
-        category = 'protein', 
-        label = 'New Protein' 
-    }
-}
-```
-
-### Adding New Food Types
-```lua
-Config.FoodTypes = {
-    'main', 'side', 'dessert', 'drink', 'appetizer'  -- Add new types
-}
-```
-
-## 📞 Support
-
-### Commands for Testing
-- `/checkbuffs` - View current active buffs
-- `/cleanup_box_stashes` - Admin: Manual cleanup of orphaned box stashes
-
-### File Structure
-```
-ferp_restaurant/
-├── client/           # Client-side scripts
-├── server/          # Server-side scripts  
-├── shared/          # Shared configuration
-├── data.sql         # Database schema
-└── fxmanifest.lua   # Resource manifest

@@ -184,7 +184,7 @@ RegisterNetEvent('ferp_restaurant:server:consumeItem', function(itemData)
     end
 end)
 
--- Export functions for other resources
+-- functions for other resources
 exports('GetPlayerBuff', function(playerId, buffType)
     if PlayerBuffs[playerId] and PlayerBuffs[playerId][buffType] then
         local buff = PlayerBuffs[playerId][buffType]
@@ -271,7 +271,7 @@ end, false)
 
 if Config.Debug then print('[DEBUG] Restaurant buff server system loaded') end
 
--- Export: Calculate hack time with intelligence buff
+-- Calculate hack time with intelligence buff
 exports('GetHackTimeWithBuff', function(playerId, baseTimeSeconds)
     if not playerId or not baseTimeSeconds then return baseTimeSeconds or 30 end
     
@@ -294,7 +294,7 @@ exports('GetHackTimeWithBuff', function(playerId, baseTimeSeconds)
     return baseTimeSeconds
 end)
 
--- Export: Check if player should get extended hack time
+-- Check if player should get extended hack time
 exports('ShouldExtendHackTime', function(playerId)
     if not playerId then return false end
     return exports['ferp_restaurant']:HasPlayerBuff(playerId, 'intelligence')

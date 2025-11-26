@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_food_items` (
     `restaurant_id` varchar(50) NOT NULL,
     `name` varchar(100) NOT NULL,
     `description` varchar(255) DEFAULT NULL,
-    `image_url` varchar(255) DEFAULT NULL,
+    `image_url` varchar(512) DEFAULT NULL,
     `food_type` enum('main','side','dessert','drink') NOT NULL DEFAULT 'main',
     `ingredients` text DEFAULT NULL,
     `active` tinyint(1) DEFAULT 1,

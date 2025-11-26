@@ -80,7 +80,7 @@ RegisterNetEvent('ferp_restaurant:client:enteredRestaurant', function(restaurant
     end
     
     -- Setup zones for this restaurant
-    exports['ferp_restaurant']:CreateRestaurantZones(restaurantId, restaurant)
+    CreateRestaurantZones(restaurantId, restaurant)
 end)
 
 -- Restaurant exit event
@@ -90,7 +90,7 @@ RegisterNetEvent('ferp_restaurant:client:leftRestaurant', function(restaurantId)
     end
     
     -- Remove zones for this restaurant
-    exports['ferp_restaurant']:RemoveRestaurantZones(restaurantId)
+    RemoveRestaurantZones(restaurantId)
 end)
 
 -- Export functions
@@ -98,11 +98,14 @@ exports('GetCurrentRestaurant', function()
     return CurrentRestaurant
 end)
 
-exports('GetPlayerJob', function()
+function GetPlayerJob()
     return PlayerJob
-end)
+end
 
-exports('IsEmployedAtRestaurant', function(restaurantId, checkDuty)
+-- Also export it for external resources
+exports('GetPlayerJob', GetPlayerJob)
+
+function IsEmployedAtRestaurant(restaurantId, checkDuty)
     if checkDuty == nil then checkDuty = true end -- Default: check duty status
     
     if Config.Debug then
@@ -149,7 +152,10 @@ exports('IsEmployedAtRestaurant', function(restaurantId, checkDuty)
     end
     
     return isEmployed and isOnDuty
-end)
+end
+
+-- Also export it for external resources
+exports('IsEmployedAtRestaurant', IsEmployedAtRestaurant)
 
 -- Event to toggle duty status
 RegisterNetEvent('ferp_restaurant:client:toggleDuty', function(restaurantId, jobName)
@@ -167,13 +173,6 @@ RegisterNetEvent('ferp_restaurant:client:toggleDuty', function(restaurantId, job
     
     -- Toggle duty status
     TriggerServerEvent('QBCore:ToggleDuty')
-    
-    local dutyStatus = player.job.onduty and 'off' or 'on'
-    lib.notify({
-        title = 'Restaurant',
-        description = 'You are now ' .. dutyStatus .. ' duty',
-        type = 'success'
-    })
 end)
 
 -- Storage interaction events

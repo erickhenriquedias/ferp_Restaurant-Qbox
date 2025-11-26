@@ -18,7 +18,7 @@ end)
 RegisterNetEvent('ferp_restaurant:client:openCookingMenu', function(restaurantId, category)
     if Config.Debug then print('[FERP Restaurant Client] openCookingMenu called for: ' .. tostring(restaurantId) .. ', category: ' .. tostring(category)) end
     
-    if not exports['ferp_restaurant']:IsEmployedAtRestaurant(restaurantId) then
+    if not IsEmployedAtRestaurant(restaurantId) then
         if Config.Debug then print('[FERP Restaurant Client] Not employed at restaurant') end
         return lib.notify({
             title = 'Restaurant',
@@ -275,12 +275,6 @@ function StartCooking(restaurantId, item)
         for i = 1, quantity do
             TriggerServerEvent('ferp_restaurant:server:craftItem', item)
         end
-        
-        lib.notify({
-            title = 'Cooking Complete',
-            description = 'You successfully cooked ' .. quantity .. 'x ' .. (item.display_name or item.name),
-            type = 'success'
-        })
     else
         if Config.Debug then print('[FERP Restaurant Client] Cooking was cancelled') end
         

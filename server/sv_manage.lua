@@ -48,7 +48,6 @@ RegisterNetEvent('ferp_restaurant:server:openFridge', function(restaurantId)
                         if timeRemaining > 0 then
                             item.metadata.expiry = currentTime + (timeRemaining * 4)
                             item.metadata.refrigerated = true
-                            -- Update item metadata using the correct ox_inventory method
                             exports.ox_inventory:SetMetadata(stashId, slot, item.metadata)
                             preservedItems = preservedItems + 1
                         end
@@ -56,7 +55,6 @@ RegisterNetEvent('ferp_restaurant:server:openFridge', function(restaurantId)
                         -- Set 24 hour expiry for refrigerated food
                         item.metadata.expiry = os.time() + (24 * 60 * 60)
                         item.metadata.refrigerated = true
-                        -- Update item metadata using the correct ox_inventory method
                         exports.ox_inventory:SetMetadata(stashId, slot, item.metadata)
                         preservedItems = preservedItems + 1
                     end
