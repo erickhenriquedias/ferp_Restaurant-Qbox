@@ -25,12 +25,6 @@ Config.Restaurants = {
                 {coords = vector3(-1187.36, -899.79, 13.8), type = 'side'},
                 {coords = vector3(-1183.37, -900.83, 13.8), type = 'dessert'},
                 {coords = vector3(-1191.52, -897.71, 13.8), type = 'drink'}
-            },
-            registers = {
-                vector3(-1187.56, -893.58, 13.8),
-                vector3(-1189.09, -894.63, 13.8),
-                vector3(-1190.63, -895.65, 13.8),
-                vector3(-1194.92, -907.73, 13.77)
             }
         }
     },
@@ -58,10 +52,6 @@ Config.Restaurants = {
                 {coords = vector3(-591.21, -1063.16, 22.36), type = 'side'},
                 {coords = vector3(-590.94, -1059.73, 22.34), type = 'dessert'},
                 {coords = vector3(-587.02, -1061.82, 22.34), type = 'drink'}
-            },
-            registers = {
-                vector3(-584.08, -1058.72, 22.34),
-                vector3(-584.02, -1061.48, 22.34)
             }
         }
     },
@@ -89,10 +79,6 @@ Config.Restaurants = {
                 {coords = vector3(-172.06, 295.15, 93.76), type = 'side'},
                 {coords = vector3(-170.12, 296.34, 93.76), type = 'dessert'},
                 {coords = vector3(-169.45, 298.12, 93.76), type = 'drink'}
-            },
-            registers = {
-                vector3(-179.96, 318.12, 97.88),
-                vector3(-177.59, 317.44, 97.88)
             }
         }
     }
