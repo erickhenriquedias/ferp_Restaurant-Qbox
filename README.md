@@ -108,6 +108,7 @@ Ensure these resources are installed and started **before** FERP Restaurant:
 | [ox_inventory](https://github.com/overextended/ox_inventory) | Latest | Item management | ✅ Yes |
 | [qbx_core](https://github.com/Qbox-project/qbx_core) | Latest | Framework core | ✅ Yes |
 | [qbx_management](https://github.com/Qbox-project/qbx_management) | Latest | Boss menus | ✅ Yes |
+| [ferp_register](https://github.com/erickhenriquedias/ferp_register) | Latest | Cashier Register | ✅ Yes |
 
 ---
 
