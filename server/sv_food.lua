@@ -52,16 +52,30 @@ local function setPlayerThirst(source, amount)
 end
 
 RegisterNetEvent('ferp_restaurant:server:changeHunger', function(amount)
+    if type(amount) ~= 'number' or amount < 0 or amount > 100 then
+        if Config.Debug then print('[SECURITY] Invalid hunger from player:', source, amount) end
+        return
+    end
     setPlayerHunger(source, amount)
 end)
 
 RegisterNetEvent('ferp_restaurant:server:changeThirst', function(amount)
+    if type(amount) ~= 'number' or amount < 0 or amount > 100 then
+        if Config.Debug then print('[SECURITY] Invalid thirst from player:', source, amount) end
+        return
+    end
     setPlayerThirst(source, amount)
 end)
 
 -- Event to apply limited vegetable health (max 50% health, no injury healing)
 RegisterNetEvent('ferp_restaurant:server:applyVegetableHealth', function(healAmount)
     local source = source
+    
+    -- Validate healAmount
+    if type(healAmount) ~= 'number' or healAmount < 0 or healAmount > 100 then
+        if Config.Debug then print('[SECURITY] Invalid heal amount from player:', source, healAmount) end
+        return
+    end
     
     -- Limit healing to configured maximum (default 50% of 100 health)
     local limitedHealAmount = math.min(healAmount, Config.BuffSystem.vegetableHealLimit or 50)
@@ -84,15 +98,6 @@ RegisterNetEvent('ferp_restaurant:server:applyVegetableHealth', function(healAmo
         TriggerClientEvent('ferp_restaurant:client:addHealthNative', source, limitedHealAmount)
         if Config.Debug then print('[DEBUG] QBX Medical not available, using native health') end
     end
-    
-    -- Notify player about the limited healing
-    TriggerClientEvent('ox_lib:notify', source, {
-        title = 'Vegetable Nutrition',
-        description = 'Vegetables restored ' .. limitedHealAmount .. ' health points (injuries require hospital treatment)',
-        type = 'success',
-        duration = 4000,
-        icon = 'leaf'
-    })
     
     if Config.Debug then
         print('[DEBUG] Applied limited vegetable health - Amount:', limitedHealAmount, 'Original:', healAmount, 'Limit:', Config.BuffSystem.vegetableHealLimit)
@@ -272,6 +277,19 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
+    
+    -- Validate item structure
+    if type(item) ~= 'table' or not item.name or not item.food_type then
+        if Config.Debug then print('[SECURITY] Invalid item data from player:', src) end
+        return
+    end
+    
+    -- Validate food_type
+    local validTypes = {main = true, side = true, dessert = true, drink = true}
+    if not validTypes[item.food_type] then
+        if Config.Debug then print('[SECURITY] Invalid food_type from player:', src, item.food_type) end
+        return
+    end
     
     if Config.Debug then print('[DEBUG] Crafting item:', json.encode(item)) end
     

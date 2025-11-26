@@ -197,12 +197,22 @@ end
 
 -- Event to handle box item removal/destruction
 RegisterNetEvent('ferp_restaurant:server:boxDestroyed', function(boxId)
+    if type(boxId) ~= 'string' or not string.match(boxId, '^box_%d+_%d+_%d+$') then
+        if Config.Debug then print('[SECURITY] Invalid boxId from player:', source, boxId) end
+        return
+    end
     if Config.Debug then print('[FERP Restaurant] Box destroyed event received for:', boxId) end
     cleanupOrphanedStash(boxId)
 end)
 
 RegisterNetEvent('ferp_restaurant:server:openBoxStash', function(boxId)
     local src = source
+    
+    -- Validate boxId format
+    if type(boxId) ~= 'string' or not string.match(boxId, '^box_%d+_%d+_%d+$') then
+        if Config.Debug then print('[SECURITY] Invalid boxId from player:', src, boxId) end
+        return
+    end
     
     if Config.Debug then print('[FERP Restaurant] Opening box stash:', boxId, 'for player:', src) end
     
@@ -228,6 +238,12 @@ RegisterNetEvent('ferp_restaurant:server:getBox', function(restaurantId)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
+    
+    -- Validate restaurantId
+    if type(restaurantId) ~= 'string' or not Config.Restaurants[restaurantId] then
+        if Config.Debug then print('[SECURITY] Invalid restaurantId from player:', src, restaurantId) end
+        return
+    end
     
     local restaurantData = Config.Restaurants[restaurantId]
     if not restaurantData or player.PlayerData.job.name ~= restaurantData.job or not player.PlayerData.job.onduty then
@@ -368,8 +384,14 @@ RegisterNetEvent('ferp_restaurant:server:craftToyBox', function(restaurantId)
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
     
+    -- Validate restaurantId
+    if type(restaurantId) ~= 'string' or not Config.Restaurants[restaurantId] then
+        if Config.Debug then print('[SECURITY] Invalid restaurantId from player:', src, restaurantId) end
+        return
+    end
+    
     local restaurantData = Config.Restaurants[restaurantId]
-    if not restaurantData or player.PlayerData.job.name ~= restaurantData.job or not player.PlayerData.job.onduty then
+    if player.PlayerData.job.name ~= restaurantData.job or not player.PlayerData.job.onduty then
         return
     end
     
@@ -473,6 +495,12 @@ RegisterNetEvent('ferp_restaurant:server:changeHunger', function(amount)
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
     
+    -- Validate amount (prevent negative or excessive values)
+    if type(amount) ~= 'number' or amount < 0 or amount > 100 then
+        if Config.Debug then print('[SECURITY] Invalid hunger amount from player:', src, amount) end
+        return
+    end
+    
     -- Add hunger using QBX system
     local currentHunger = player.PlayerData.metadata.hunger or 0
     local newHunger = math.min(100, currentHunger + amount)
@@ -488,6 +516,12 @@ RegisterNetEvent('ferp_restaurant:server:changeThirst', function(amount)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
+    
+    -- Validate amount (prevent negative or excessive values)
+    if type(amount) ~= 'number' or amount < 0 or amount > 100 then
+        if Config.Debug then print('[SECURITY] Invalid thirst amount from player:', src, amount) end
+        return
+    end
     
     -- Add thirst using QBX system
     local currentThirst = player.PlayerData.metadata.thirst or 0

@@ -49,6 +49,25 @@ end)
 RegisterNetEvent('ferp_restaurant:server:applyBuff', function(buffType, strength, duration)
     local src = source
     
+    -- Validate inputs
+    if type(buffType) ~= 'string' or type(strength) ~= 'number' or type(duration) ~= 'number' then
+        if Config.Debug then print('[SECURITY] Invalid buff parameters from player:', src) end
+        return
+    end
+    
+    -- Validate buff type
+    local validBuffs = {strength = true, stamina = true, intelligence = true, money_luck = true, alert = true}
+    if not validBuffs[buffType] then
+        if Config.Debug then print('[SECURITY] Invalid buff type from player:', src, buffType) end
+        return
+    end
+    
+    -- Validate ranges
+    if strength < 0 or strength > 100 or duration < 0 or duration > 600 then
+        if Config.Debug then print('[SECURITY] Invalid buff values from player:', src, strength, duration) end
+        return
+    end
+    
     -- Force initialize player buffs if not exists (immediate fix)
     if not PlayerBuffs[src] then
         PlayerBuffs[src] = {

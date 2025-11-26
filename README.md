@@ -320,7 +320,7 @@ Each ingredient category provides different buffs:
 
 More ingredients = stronger buffs (up to 4 ingredients for max strength)
 
-## 📞 Support & Commands
+## Support & Commands
 
 ### Useful Commands
 - `/checkbuffs` - See what buffs you currently have active
