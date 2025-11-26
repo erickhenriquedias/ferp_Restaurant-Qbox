@@ -1,4 +1,3 @@
--- Additional restaurant events for markers system compatibility
 
 -- Fridge event
 RegisterNetEvent('ferp_restaurant:client:openFridge', function(restaurantId)

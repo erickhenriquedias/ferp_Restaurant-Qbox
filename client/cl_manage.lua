@@ -1,4 +1,4 @@
--- Use the global 'lib' table provided by ox_lib (do NOT assign exports.ox_lib)
+-- Use the global 'lib' table provided by ox_lib
 
 -- Alternative event that accepts only restaurantId
 RegisterNetEvent('ferp_restaurant:client:openManagement', function(restaurantId)

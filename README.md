@@ -4,7 +4,7 @@
 
 [![Performance](https://img.shields.io/badge/Resmon-0.00ms-success)]()
 [![Framework](https://img.shields.io/badge/Framework-QBX%20Core-blue)]()
-[![Version](https://img.shields.io/badge/Version-1.8.0-brightgreen)]()
+[![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen)]()
 
 ---
 

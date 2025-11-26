@@ -213,7 +213,7 @@ exports('useFood', function(data, slot)
             count = 1
         }
         
-        print('[DEBUG] Sending consume data:', json.encode(consumeData))
+        -- print('[DEBUG] Sending consume data:', json.encode(consumeData))
         TriggerServerEvent('ferp_restaurant:server:consumeFood', consumeData)
         
         -- Apply restaurant buff system

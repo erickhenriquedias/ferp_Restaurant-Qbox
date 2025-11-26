@@ -1,6 +1,5 @@
 --[[
-    Restaurant Buff System - Simplified version without premium ingredients
-    All ingredients provide normal buffs based on category from Config.Ingredients
+    Restaurant Buff System 
 ]]--
 
 local Buffs = {}
@@ -94,48 +93,49 @@ end
 
 -- Function to apply specific buff types
 function Buffs.applySpecificBuff(buffType, ingredientCount)
-    -- Normal scaling: 1 ingredient = 25% max, up to 100% with 4+ ingredients
-    local buffStrength
+    -- Get buff strength from config
+    local baseStrength = Config.BuffStrength.strengthPerIngredient[ingredientCount] or Config.BuffStrength.strengthPerIngredient[4]
     
-    if ingredientCount == 1 then
-        buffStrength = 25 -- 1 ingredient = 25% buff
-    elseif ingredientCount == 2 then
-        buffStrength = 50 -- 2 ingredients = 50% buff
-    elseif ingredientCount == 3 then
-        buffStrength = 75 -- 3 ingredients = 75% buff
-    else
-        buffStrength = 100 -- 4+ ingredients = 100% buff
-    end
+    -- Apply type-specific multiplier
+    local typeMultiplier = Config.BuffStrength.globalMultipliers[buffType] or 1.0
     
-    local duration = 300 -- 5 minutes default (300 seconds)
+    -- Apply global multiplier
+    local globalMultiplier = Config.BuffStrength.globalMultipliers.allBuffs or 1.0
     
-    if buffType == "stamina" then
-        duration = 300
-    end
+    -- Calculate final strength
+    local buffStrength = math.floor(baseStrength * typeMultiplier * globalMultiplier)
+    
+    -- Get duration from config
+    local duration = Config.BuffStrength.duration[buffType] or 300
     
     if Config.Debug then
-        print('[DEBUG] Normal buff calculation - Count:', ingredientCount, 'Strength:', buffStrength, 'Type:', buffType, 'Duration:', duration)
+        print('[DEBUG] Buff calculation - Type:', buffType, 'Count:', ingredientCount, 'Base:', baseStrength, 'TypeMult:', typeMultiplier, 'GlobalMult:', globalMultiplier, 'Final:', buffStrength, 'Duration:', duration)
     end
     
     if buffType == "strength" then
         TriggerServerEvent('ferp_restaurant:server:applyBuff', 'strength', buffStrength, duration)
     elseif buffType == "stamina" then
         -- Also apply medical healing based on vegetable count
-        local healAmount = ingredientCount * 10 -- 10 points per vegetable
+        local healAmount = ingredientCount * Config.BuffStrength.immediate.healthPerVegetable
         Buffs.applyMedicalHealing(healAmount)
         TriggerServerEvent('ferp_restaurant:server:applyBuff', 'stamina', buffStrength, duration)
     elseif buffType == "intelligence" then
         TriggerServerEvent('ferp_restaurant:server:applyBuff', 'intelligence', buffStrength, duration)
     elseif buffType == "money" then
-        TriggerServerEvent('ferp_restaurant:server:applyBuff', 'money_luck', buffStrength, 600) -- 10 minutes
+        TriggerServerEvent('ferp_restaurant:server:applyBuff', 'money_luck', buffStrength, duration)
     elseif buffType == "alert" then
-        TriggerServerEvent('ferp_restaurant:server:applyBuff', 'alert', buffStrength, 180) -- 3 minutes
+        TriggerServerEvent('ferp_restaurant:server:applyBuff', 'alert', buffStrength, duration)
     end
 end
 
 -- Function to apply stress relief (immediate effect)
 function Buffs.applyStressRelief(ingredientCount)
-    local stressReduction = math.floor(25 * ingredientCount) -- 25 stress per ingredient
+    -- Get stress reduction from config with multipliers
+    local baseReduction = Config.BuffStrength.immediate.stressPerIngredient * ingredientCount
+    local stressMultiplier = Config.BuffStrength.globalMultipliers.stress or 1.0
+    local globalMultiplier = Config.BuffStrength.globalMultipliers.allBuffs or 1.0
+    local stressReduction = math.floor(baseReduction * stressMultiplier * globalMultiplier)
+    
     TriggerServerEvent('hud:server:RelieveStress', stressReduction)
     
     -- Show notification
@@ -148,13 +148,18 @@ function Buffs.applyStressRelief(ingredientCount)
     })
     
     if Config.Debug then
-        print('[DEBUG] Stress relief applied - Count:', ingredientCount, 'Reduction:', stressReduction)
+        print('[DEBUG] Stress relief applied - Count:', ingredientCount, 'Base:', baseReduction, 'Multipliers:', stressMultiplier, globalMultiplier, 'Final:', stressReduction)
     end
 end
 
 -- Function to apply hunger boost (immediate effect)
 function Buffs.applyHungerBoost(ingredientCount)
-    local extraHunger = math.floor(30 * ingredientCount) -- 30 hunger per grain ingredient
+    -- Get hunger boost from config with multipliers
+    local baseHunger = Config.BuffStrength.immediate.hungerPerIngredient * ingredientCount
+    local hungerMultiplier = Config.BuffStrength.globalMultipliers.hunger or 1.0
+    local globalMultiplier = Config.BuffStrength.globalMultipliers.allBuffs or 1.0
+    local extraHunger = math.floor(baseHunger * hungerMultiplier * globalMultiplier)
+    
     TriggerEvent("changehunger", extraHunger)
     
     -- Show notification
@@ -167,7 +172,7 @@ function Buffs.applyHungerBoost(ingredientCount)
     })
     
     if Config.Debug then
-        print('[DEBUG] Hunger boost applied - Count:', ingredientCount, 'Boost:', extraHunger)
+        print('[DEBUG] Hunger boost applied - Count:', ingredientCount, 'Base:', baseHunger, 'Multipliers:', hungerMultiplier, globalMultiplier, 'Final:', extraHunger)
     end
 end
 

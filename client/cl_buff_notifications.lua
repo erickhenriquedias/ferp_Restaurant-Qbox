@@ -3,11 +3,11 @@
 -- Buff applied notification
 RegisterNetEvent('ferp_restaurant:client:buffApplied', function(buffType, strength, duration)
     local buffNames = {
-        strength = 'Forte',
-        stamina = 'Resistente', 
-        intelligence = 'Inteligente',
-        money_luck = 'Sortudo',
-        alert = 'Alerta'
+        strength = 'Strong',
+        stamina = 'Energized', 
+        intelligence = 'Smart',
+        money_luck = 'Lucky',
+        alert = 'Alert'
     }
     
     local buffName = buffNames[buffType] or buffType
@@ -29,8 +29,8 @@ RegisterNetEvent('ferp_restaurant:client:buffApplied', function(buffType, streng
     end
     
     TriggerEvent('ox_lib:notify', {
-        title = 'Efeito Ativo',
-        description = 'Você se sente mais ' .. buffName .. ' (' .. timeText .. ')',
+        title = 'Buff Active',
+        description = 'You feel more ' .. buffName .. ' (' .. timeText .. ')',
         type = 'success',
         duration = 4000
     })
@@ -43,18 +43,18 @@ end)
 -- Buff expired notification  
 RegisterNetEvent('ferp_restaurant:client:buffExpired', function(buffType)
     local buffNames = {
-        strength = 'Forte',
-        stamina = 'Resistente',
-        intelligence = 'Inteligente', 
-        money_luck = 'Sortudo',
-        alert = 'Alerta'
+        strength = 'Strong',
+        stamina = 'Energized',
+        intelligence = 'Smart', 
+        money_luck = 'Lucky',
+        alert = 'Alert'
     }
     
     local buffName = buffNames[buffType] or buffType
     
     TriggerEvent('ox_lib:notify', {
-        title = 'Efeito Expirado',
-        description = 'Você não se sente mais ' .. buffName,
+        title = 'Buff Expired',
+        description = 'You no longer feel ' .. buffName,
         type = 'inform',
         duration = 3000
     })
@@ -74,11 +74,11 @@ RegisterNetEvent('ferp_restaurant:client:receivePlayerBuffs', function(buffs)
     for buffType, buffData in pairs(buffs) do
         if buffData.active then
             local buffNames = {
-                strength = 'Forte',
-                stamina = 'Resistente',
-                intelligence = 'Inteligente', 
-                money_luck = 'Sortudo',
-                alert = 'Alerta'
+                strength = 'Strong',
+                stamina = 'Energized',
+                intelligence = 'Smart', 
+                money_luck = 'Lucky',
+                alert = 'Alert'
             }
             local buffName = buffNames[buffType] or buffType
             activeBuffs[#activeBuffs + 1] = buffName
@@ -87,15 +87,15 @@ RegisterNetEvent('ferp_restaurant:client:receivePlayerBuffs', function(buffs)
     
     if #activeBuffs > 0 then
         TriggerEvent('ox_lib:notify', {
-            title = 'Efeitos Ativos',
-            description = 'Você se sente: ' .. table.concat(activeBuffs, ', '),
+            title = 'Active Buffs',
+            description = 'You feel: ' .. table.concat(activeBuffs, ', '),
             type = 'inform',
             duration = 5000
         })
     else
         TriggerEvent('ox_lib:notify', {
-            title = 'Efeitos Ativos',
-            description = 'Nenhum efeito ativo no momento',
+            title = 'Active Buffs',
+            description = 'No active buffs at the moment',
             type = 'inform',
             duration = 3000
         })

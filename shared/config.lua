@@ -191,11 +191,53 @@ Config.FoodAnimations = {
 
 -- Buff system configuration
 Config.BuffSystem = {
-    enabled = true,          -- Ativar/desativar sistema de buffs
-    maxBuffs = 5,           -- Máximo de buffs simultâneos
-    stackable = false,      -- Buffs do mesmo tipo não acumulam
-    debugMode = false,      -- Debug para desenvolvimento (DESABILITADO EM PRODUÇÃO)
-    vegetableHealLimit = 50 -- Máximo de vida que vegetables podem recuperar (50% de 100)
+    enabled = true,          -- Enable/disable buff system
+    maxBuffs = 5,           -- Maximum simultaneous buffs
+    stackable = false,      -- Buffs of the same type don't stack
+    debugMode = false,      -- Debug for development (DISABLED IN PRODUCTION)
+    vegetableHealLimit = 50 -- Maximum health that vegetables can recover (50% of 100)
+}
+
+-- Buff strength and duration configuration (nerf or buff here!)
+Config.BuffStrength = {
+    -- Buff strength based on ingredient count from category
+    -- Formula: ingredientCount * multiplier = buff strength
+    -- Example: 2 proteins * 25 = 50% strength
+    strengthPerIngredient = {
+        [1] = 25,  -- 1 ingredient = 25% strength
+        [2] = 50,  -- 2 ingredients = 50% strength
+        [3] = 75,  -- 3 ingredients = 75% strength
+        [4] = 100  -- 4+ ingredients = 100% strength (maximum)
+    },
+    
+    -- Buff durations in seconds
+    duration = {
+        strength = 300,      -- Proteins: 5 minutes (strength/damage)
+        stamina = 300,       -- Vegetables: 5 minutes (stamina)
+        intelligence = 300,  -- Leavening: 5 minutes (XP/hack time)
+        money_luck = 600,    -- Seasonings: 10 minutes (money bonus)
+        alert = 180          -- Sugars: 3 minutes (speed/alert)
+    },
+    
+    -- Immediate effects (not timed buffs)
+    immediate = {
+        stressPerIngredient = 25,  -- Dairy/Oils: -25 stress per ingredient
+        hungerPerIngredient = 30,  -- Grains: +30 hunger per ingredient
+        healthPerVegetable = 10    -- Vegetables: +10 health per vegetable (limit: vegetableHealLimit)
+    },
+    
+    -- Global multipliers (use for general nerf/buff)
+    globalMultipliers = {
+        allBuffs = 1.0,        -- Multiplies ALL buffs (0.5 = half, 2.0 = double)
+        strength = 1.0,        -- Multiplies only strength buff
+        stamina = 1.0,         -- Multiplies only stamina buff
+        intelligence = 1.0,    -- Multiplies only intelligence buff
+        money_luck = 1.0,      -- Multiplies only money luck buff
+        alert = 1.0,           -- Multiplies only alert buff
+        stress = 1.0,          -- Multiplies stress reduction
+        hunger = 1.0,          -- Multiplies hunger gain
+        health = 1.0           -- Multiplies health gain
+    }
 }
 
 -- Ingredient categories mapping (centralized configuration)
