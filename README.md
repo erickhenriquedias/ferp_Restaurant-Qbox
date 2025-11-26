@@ -1,4 +1,4 @@
-# FERP Restaurant System
+# FERP Restaurant System   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G01P76LD)
 
 > **Advanced Restaurant Management System for QBX Core**
 
@@ -845,3 +845,5 @@ local xpMult = exports.ferp_restaurant:GetXPMultiplier(playerId)
 local baseXP = 100
 local finalXP = baseXP * xpMult  -- 175 XP
 ```
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G01P76LD)
