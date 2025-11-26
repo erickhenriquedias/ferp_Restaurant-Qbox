@@ -10,24 +10,24 @@
 
 ##  Why Choose FERP Restaurant?
 
-** Performance Optimized**
+### Performance Optimized
 - Ultra-low resource usage (0.00ms average)
 - Efficient database queries with caching
 - Optimized for busy servers
 
-** Highly Customizable**
+### Highly Customizable
 - Easy-to-edit configuration files
 - 8 unique buff categories
 - Support for unlimited restaurants
 - Dynamic food creation system
 
-** Developer Friendly**
+### Developer Friendly
 - Comprehensive export system
 - Full documentation with examples
 - Clean, maintainable code structure
 - Active development & support
 
-** Business Ready**
+### Business Ready
 - Complete employee management
 - Grade-based permissions
 - Fridge preservation mechanics
