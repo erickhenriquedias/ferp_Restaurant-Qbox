@@ -11,7 +11,7 @@
 ##  Why Choose FERP Restaurant?
 
 ** Performance Optimized**
-- Ultra-low resource usage (0.24ms average)
+- Ultra-low resource usage (0.00ms average)
 - Efficient database queries with caching
 - Optimized for busy servers
 
