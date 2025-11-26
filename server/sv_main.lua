@@ -9,9 +9,8 @@ CreateThread(function()
         
         if not result then
             -- Create new restaurant entry
-            MySQL.insert.await('INSERT INTO restaurants (restaurant_id, foods, toys) VALUES (?, ?, ?)', {
+            MySQL.insert.await('INSERT INTO restaurants (restaurant_id, toys) VALUES (?, ?)', {
                 restaurantId,
-                json.encode({}),
                 json.encode({})
             })
             
@@ -28,7 +27,7 @@ CreateThread(function()
             Restaurants[restaurantId] = {
                 id = restaurantId,
                 name = restaurantData.name,
-                foodItems = json.decode(result.foods) or {},
+                foodItems = {},
                 menuItems = {},
                 toys = json.decode(result.toys) or {},
                 employees = {}
@@ -108,8 +107,7 @@ local function SaveRestaurantData(restaurantId)
     if not Restaurants[restaurantId] then return false end
     
     local restaurant = Restaurants[restaurantId]
-    MySQL.update.await('UPDATE restaurants SET foods = ?, toys = ? WHERE restaurant_id = ?', {
-        json.encode(restaurant.foodItems),
+    MySQL.update.await('UPDATE restaurants SET toys = ? WHERE restaurant_id = ?', {
         json.encode(restaurant.toys),
         restaurantId
     })

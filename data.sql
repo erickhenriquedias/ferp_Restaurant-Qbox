@@ -6,7 +6,6 @@
 CREATE TABLE IF NOT EXISTS `restaurants` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `restaurant_id` varchar(50) NOT NULL,
-    `foods` longtext DEFAULT '[]',
     `toys` longtext DEFAULT '[]',
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -31,10 +30,10 @@ CREATE TABLE IF NOT EXISTS `restaurant_food_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default restaurant data
-INSERT IGNORE INTO `restaurants` (`restaurant_id`, `foods`, `toys`) VALUES
-('burger_shot', '[]', '[]'),
-('uwu_cafe', '[]', '[]'),
-('rooster', '[]', '[]');
+INSERT IGNORE INTO `restaurants` (`restaurant_id`, `toys`) VALUES
+('burger_shot', '[]'),
+('uwu_cafe', '[]'),
+('rooster', '[]');
 
 
 -- Example balanced food items for each restaurant (no premium multipliers)

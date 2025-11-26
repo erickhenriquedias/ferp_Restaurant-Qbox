@@ -192,7 +192,7 @@ RegisterNetEvent('ferp_restaurant:server:paySalary', function(restaurantId, empl
         return
     end
     
-    -- Validate amount 
+    -- Validate amount
     if amount < 0 or amount > 50000 then
         if Config.Debug then print('[SECURITY] Invalid salary amount from player:', src, amount) end
         return lib.notify(src, {

@@ -305,4 +305,4 @@ Config.Stash = {
 }
 
 -- Debug mode (DISABLE IN PRODUCTION)
-Config.Debug = true
+Config.Debug = false
