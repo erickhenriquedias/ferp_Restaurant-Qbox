@@ -57,7 +57,39 @@ RegisterNetEvent('ferp_restaurant:client:openManagementMenu', function(restauran
             description = 'Open employee management system',
             icon = 'users',
             onSelect = function()
-                exports.qbx_management:OpenBossMenu('job')
+                -- Block management zone interaction
+                BossMenuOpen = true
+                
+                CreateThread(function()
+                    Wait(100)
+                    
+                    local ok = pcall(function()
+                        exports.qbx_management:OpenBossMenu('job')
+                    end)
+                    
+                    if not ok then
+                        lib.notify({
+                            title = 'Management',
+                            description = 'Boss menu not available',
+                            type = 'error'
+                        })
+                        BossMenuOpen = false
+                        return
+                    end
+                    
+                    -- Wait until NUI focus is released
+                    while IsNuiFocused() do
+                        Wait(200)
+                    end
+                    
+                    
+                    Wait(300)
+                    
+                    -- Hide the TextUI that qbx_management
+                    lib.hideTextUI()
+                    
+                    BossMenuOpen = false
+                end)
             end
         },
         {
