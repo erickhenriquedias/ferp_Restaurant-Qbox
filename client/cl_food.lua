@@ -1,5 +1,4 @@
 -- Food management client functions
--- Use the global 'lib' table provided by ox_lib (do NOT assign exports.ox_lib)
 local currentRestaurantData = {}
 
 -- Event to update food items when changed
@@ -65,88 +64,6 @@ RegisterNetEvent('ferp_restaurant:client:openCookingMenu', function(restaurantId
         ShowFoodTypeMenu(restaurantId, categoryItems, category)
         return
     end
-        
-    -- Create context menu options (show all categories)
-    local options = {}
-    
-    -- Group by food type
-    local groupedItems = {
-        main = {},
-        side = {},
-        dessert = {},
-        drink = {}
-    }
-    
-    for _, item in pairs(foodItems) do
-        if groupedItems[item.food_type] then
-            groupedItems[item.food_type][#groupedItems[item.food_type] + 1] = item
-        end
-    end
-        
-        -- Add main dishes
-        if #groupedItems.main > 0 then
-            options[#options + 1] = {
-                title = '🍽️ Main Dishes',
-                description = 'Cook main course meals',
-                icon = 'utensils',
-                onSelect = function()
-                    ShowFoodTypeMenu(restaurantId, groupedItems.main, 'main')
-                end
-            }
-        end
-        
-        -- Add side dishes
-        if #groupedItems.side > 0 then
-            options[#options + 1] = {
-                title = '🥗 Side Dishes',
-                description = 'Cook side dishes',
-                icon = 'leaf',
-                onSelect = function()
-                    ShowFoodTypeMenu(restaurantId, groupedItems.side, 'side')
-                end
-            }
-        end
-        
-        -- Add desserts
-        if #groupedItems.dessert > 0 then
-            options[#options + 1] = {
-                title = '🍰 Desserts',
-                description = 'Prepare desserts',
-                icon = 'birthday-cake',
-                onSelect = function()
-                    ShowFoodTypeMenu(restaurantId, groupedItems.dessert, 'dessert')
-                end
-            }
-        end
-        
-        -- Add drinks
-        if #groupedItems.drink > 0 then
-            options[#options + 1] = {
-                title = '🥤 Drinks',
-                description = 'Prepare beverages',
-                icon = 'glass-whiskey',
-                onSelect = function()
-                    ShowFoodTypeMenu(restaurantId, groupedItems.drink, 'drink')
-                end
-            }
-        end
-        
-        if #options == 0 then
-            return lib.notify({
-                title = 'Cooking',
-                description = 'No food items available to cook',
-                type = 'error'
-            })
-        end
-        
-        -- Show context menu
-        lib.registerContext({
-            id = 'ferp_restaurant_cooking',
-            title = 'Cooking Menu',
-            options = options
-        })
-        
-        lib.showContext('ferp_restaurant_cooking')
 end)
 
 -- Show food type submenu
@@ -272,9 +189,7 @@ function StartCooking(restaurantId, item)
         if Config.Debug then print('[FERP Restaurant Client] Cooking completed successfully') end
         
         -- Craft items (consume ingredients and give result) via server
-        for i = 1, quantity do
-            TriggerServerEvent('ferp_restaurant:server:craftItem', item)
-        end
+        TriggerServerEvent('ferp_restaurant:server:craftItem', item, quantity)
     else
         if Config.Debug then print('[FERP Restaurant Client] Cooking was cancelled') end
         
@@ -286,73 +201,3 @@ function StartCooking(restaurantId, item)
     end
 end
 
--- Open customer menu (for ordering)
-RegisterNetEvent('ferp_restaurant:client:openMenu', function(restaurantId)
-    if Config.Debug then print('[FERP Restaurant Client] Opening customer menu for: ' .. tostring(restaurantId)) end
-    
-    -- Get menu items for this restaurant using ox_lib callback
-    local menuItems = lib.callback.await('ferp_restaurant:server:getMenuItems', false, restaurantId)
-    
-    if Config.Debug then print('[FERP Restaurant Client] Menu callback response received. Items: ' .. (menuItems and #menuItems or 'nil')) end
-    
-    if not menuItems or next(menuItems) == nil then
-        if Config.Debug then print('[FERP Restaurant Client] No menu items found') end
-        return lib.notify({
-            title = 'Restaurant Menu',
-            description = 'No menu items available at this restaurant',
-            type = 'error'
-        })
-    end
-    
-    if Config.Debug then print('[FERP Restaurant Client] Processing ' .. #menuItems .. ' menu items') end
-    
-    -- Create context menu options
-    local options = {}
-    
-    for _, item in pairs(menuItems) do
-        -- Show ingredients instead of price
-        local ingredientsText = ''
-        if item.ingredients and #item.ingredients > 0 then
-            local ingredientLabels = {}
-            for _, ingredient in pairs(item.ingredients) do
-                local ingredientData = Config.Ingredients[ingredient]
-                if ingredientData then
-                    ingredientLabels[#ingredientLabels + 1] = ingredientData.label
-                end
-            end
-            if #ingredientLabels > 0 then
-                ingredientsText = '\nIngredients: ' .. table.concat(ingredientLabels, ', ')
-            end
-        end
-        
-        options[#options + 1] = {
-            title = item.display_name or item.name,
-            description = (item.description or 'Delicious food') .. ingredientsText,
-            icon = 'hamburger',
-            onSelect = function()
-                if Config.Debug then print('[FERP Restaurant Client] Ordering item: ' .. (item.display_name or item.name)) end
-                -- Order this item (craft with ingredients)
-                TriggerServerEvent('ferp_restaurant:server:craftItem', restaurantId, item)
-            end
-        }
-    end
-    
-    if #options == 0 then
-        return lib.notify({
-            title = 'Restaurant Menu',
-            description = 'No menu items available',
-            type = 'error'
-        })
-    end
-    
-    if Config.Debug then print('[FERP Restaurant Client] Showing menu with ' .. #options .. ' options') end
-    
-    -- Show context menu
-    lib.registerContext({
-        id = 'ferp_restaurant_menu',
-        title = 'Restaurant Menu',
-        options = options
-    })
-    
-    lib.showContext('ferp_restaurant_menu')
-end)

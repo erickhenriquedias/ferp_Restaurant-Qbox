@@ -1,6 +1,8 @@
 -- ox_target management for restaurants
 local activeTargets = {}
 
+BossMenuOpen = false
+
 -- Debug function
 local function debugPrint(message)
     if Config.Debug then
@@ -46,6 +48,7 @@ function CreateRestaurantZones(restaurantId, restaurant)
                             TriggerEvent('ferp_restaurant:client:openManagement', restaurantId)
                         end,
                     canInteract = function()
+                        if BossMenuOpen then return false end
                         return IsEmployedAtRestaurant(restaurantId) and 
                                exports.qbx_core:GetPlayerData().job.grade.level >= 2
                     end

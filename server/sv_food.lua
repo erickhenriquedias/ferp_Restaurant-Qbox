@@ -273,10 +273,13 @@ lib.callback.register('ferp_restaurant:server:deleteFoodItem', function(source, 
 end)
 
 -- Event for crafting food
-RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
+RegisterNetEvent('ferp_restaurant:server:craftItem', function(item, quantity)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
+    
+    quantity = quantity or 1
+    if type(quantity) ~= 'number' or quantity < 1 then quantity = 1 end
     
     -- Validate item structure
     if type(item) ~= 'table' or not item.name or not item.food_type then
@@ -291,7 +294,7 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
         return
     end
     
-    if Config.Debug then print('[DEBUG] Crafting item:', json.encode(item)) end
+    if Config.Debug then print('[DEBUG] Crafting item:', json.encode(item), 'Quantity:', quantity) end
     
     -- Use the category-based item name
     local itemName = 'restaurant_' .. item.food_type
@@ -321,13 +324,13 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
         
         if Config.Debug then print('[DEBUG] Metadata being sent:', json.encode(metadata)) end
         
-        local success = exports.ox_inventory:AddItem(src, itemName, 1, metadata)
+        local success = exports.ox_inventory:AddItem(src, itemName, quantity, metadata)
         if Config.Debug then print('[DEBUG] AddItem result:', success) end
         
         if success then
             TriggerClientEvent('ox_lib:notify', src, {
                 title = 'Cooking Complete',
-                description = 'You cooked: ' .. item.name,
+                description = 'You cooked ' .. quantity .. 'x ' .. item.name,
                 type = 'success'
             })
         else
@@ -343,7 +346,7 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     -- Count how many of each ingredient is needed
     local ingredientCounts = {}
     for _, ingredient in pairs(item.ingredients) do
-        ingredientCounts[ingredient] = (ingredientCounts[ingredient] or 0) + 1
+        ingredientCounts[ingredient] = (ingredientCounts[ingredient] or 0) + quantity
     end
     
     -- Check if player has enough of each ingredient
@@ -375,7 +378,7 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     end
     
     -- Give crafted item with metadata
-    if Config.Debug then print('[DEBUG] Adding crafted item to inventory:', itemName) end
+    if Config.Debug then print('[DEBUG] Adding crafted item to inventory:', itemName, 'Quantity:', quantity) end
     
     -- Create metadata for ox_inventory
     local metadata = {
@@ -396,13 +399,13 @@ RegisterNetEvent('ferp_restaurant:server:craftItem', function(item)
     
     if Config.Debug then print('[DEBUG] Metadata being sent:', json.encode(metadata)) end
     
-    local success = exports.ox_inventory:AddItem(src, itemName, 1, metadata)
+    local success = exports.ox_inventory:AddItem(src, itemName, quantity, metadata)
     if Config.Debug then print('[DEBUG] AddItem result:', success) end
     
     if success then
         TriggerClientEvent('ox_lib:notify', src, {
             title = 'Cooking Complete',
-            description = 'You cooked: ' .. item.name,
+            description = 'You cooked ' .. quantity .. 'x ' .. item.name,
             type = 'success'
         })
     else
@@ -755,15 +758,11 @@ RegisterCommand('testfoodactive', function(source, args)
     end
     
     -- Test update
-    local updateResult = MySQL.update.await('UPDATE restaurant_food_items SET active = 0 WHERE restaurant_id = ? LIMIT 1', {restaurantId})
-    print('[FERP Restaurant Test] Update result: ' .. tostring(updateResult))
-    
+    local updateResult = MySQL.update.await('UPDATE restaurant_food_items SET active = 0 WHERE restaurant_id = ? LIMIT 1', {restaurantId})    
 end, true)
 
 -- ox_lib Callback for toggling food item active status
-lib.callback.register('ferp_restaurant:server:toggleFoodItemActive', function(source, restaurantId, itemName)
-    print('[FERP Restaurant Server] toggleFoodItemActive called for item: ' .. tostring(itemName) .. ' in restaurant: ' .. tostring(restaurantId))
-    
+lib.callback.register('ferp_restaurant:server:toggleFoodItemActive', function(source, restaurantId, itemName)    
     local Player = exports.qbx_core:GetPlayer(source)
     if not Player then
         if Config.Debug then print('[FERP Restaurant Server] Player not found') end
@@ -831,25 +830,19 @@ lib.callback.register('ferp_restaurant:server:toggleFoodItemActive', function(so
     
     -- Toggle the status: if currently active, make inactive (0), if inactive, make active (1)
     local newActive = isCurrentlyActive and 0 or 1
-    
-    print('[FERP Restaurant Server] Current active status: ' .. tostring(isCurrentlyActive) .. ', New status: ' .. tostring(newActive))
-    
+        
     -- Update the active status
     local updateResult = MySQL.update.await('UPDATE restaurant_food_items SET active = ? WHERE restaurant_id = ? AND name = ?', {
         newActive, restaurantId, itemName
     })
-    
-    print('[FERP Restaurant Server] Update result: ' .. tostring(updateResult))
-    
+        
     if updateResult and updateResult > 0 then
-        print('[FERP Restaurant Server] Food item active status updated successfully - Item: ' .. itemName .. ', New Status: ' .. (newActive == 1 and 'Active' or 'Inactive'))
         
         -- Trigger client update
         TriggerClientEvent('ferp_restaurant:client:foodItemsUpdated', -1, restaurantId)
         
         return newActive == 1
     else
-        print('[FERP Restaurant Server] Failed to update food item active status - Update result: ' .. tostring(updateResult))
         return nil
     end
 end)
